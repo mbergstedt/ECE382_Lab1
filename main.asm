@@ -61,6 +61,7 @@ addition:
 
 subtraction:
 			sub.b	r8,		 r6
+			jn		underMin
 			jmp		storage
 
 overMax:
@@ -68,7 +69,8 @@ overMax:
 			jmp		storage
 
 underMin:
-
+			mov.b	#MIN_VAL,r6
+			jmp		storage
 
 ;multiplication:
 ;			add.w	r6,		 r6
