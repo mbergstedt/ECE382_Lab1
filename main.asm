@@ -26,69 +26,69 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;-------------------------------------------------------------------------------
 ADD_OP:     .equ    0x11
 SUB_OP:     .equ    0x22
-;MUL_OP:     .equ    0x33
+MUL_OP:     .equ    0x33
 CLR_OP:     .equ    0x44
 END_OP:     .equ    0x55
 ; set up constants for highest and lowest allowable values
 MAX_VAL:	.equ	0xff
 MIN_VAL:	.equ	0x00
 
-			mov.w	#0xc00c, r9
-			mov.w	#0x0200, r10
-			mov.b	0(r9),	 r6
+			mov.w	#program1, r9
+			mov.w	#0x0200,   r10
+			mov.b	0(r9),	   r6
 			inc		r9
 
 fillData:
-			mov.b	0(r9),	 r7
+			mov.b	0(r9),	   r7
 			inc		r9
-			mov.b	0(r9),	 r8
+			mov.b	0(r9),	   r8
 			inc		r9
-			cmp		#ADD_OP, r7
+			cmp		#ADD_OP,   r7
 			jz		addition
-			cmp		#SUB_OP, r7
+			cmp		#SUB_OP,   r7
 			jz		subtraction
-			;cmp		#MUL_OP, r7
-			;jz		multiplication
-			cmp		#CLR_OP, r7
+			cmp		#MUL_OP,   r7
+			jz		multiplication
+			cmp		#CLR_OP,   r7
 			jz		clearance
 			jmp		programEnd
 
 addition:
-			add.w	r8,		 r6
-			cmp		#MAX_VAL,r6
+			add.w	r8,		   r6
+			cmp		#MAX_VAL,  r6
 			jhs		overMax
 			jmp		storage
 
 subtraction:
-			sub.b	r8,		 r6
+			sub.b	r8,		   r6
 			jn		underMin
 			jmp		storage
 
 overMax:
-			mov.b	#MAX_VAL,r6
+			mov.b	#MAX_VAL,  r6
 			jmp		storage
 
 underMin:
-			mov.b	#MIN_VAL,r6
+			mov.b	#MIN_VAL,  r6
 			jmp		storage
 
-;multiplication:
-;			add.w	r6,		 r6
-;			dec		r8
-;			tst		r8
-;			jnz		multiplication
-;			jmp		storage
+multiplication:
+			add.w	r6,		   r6
+			decd	r8
+			tst		r8
+			jnz		multiplication
+			jmp		storage
 
 clearance:
 			clr.b	r6
 			jmp		storage
-resetR6		mov.b	r8,		 r6
+resetR6		mov.b	r8,		   r6
 			jmp		fillData
 
 storage:
-			mov.b	r6,		 0(r10)
+			mov.b	r6,		   0(r10)
 			inc		r10
-			cmp		#CLR_OP, r7
+			cmp		#CLR_OP,   r7
 			jz		resetR6
 			jmp		fillData
 
