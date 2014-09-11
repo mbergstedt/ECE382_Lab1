@@ -33,8 +33,8 @@ END_OP:     .equ    0x55
 MAX_VAL:	.equ	0xff
 MIN_VAL:	.equ	0x00
 
-			mov.w	#program1, r9
-			mov.w	#0x0200,   r10
+			mov.w	#program3, r9
+			mov.w	#myResults,r10
 			mov.b	0(r9),	   r6
 			inc		r9
 
@@ -47,10 +47,12 @@ fillData:
 			jz		addition
 			cmp		#SUB_OP,   r7
 			jz		subtraction
-			cmp		#MUL_OP,   r7
-			jz		multiplication
 			cmp		#CLR_OP,   r7
 			jz		clearance
+			cmp		#MUL_OP,   r7
+			mov.b	r6,		   r5			; use r5 to keep track of original value
+			;clr.b	r6
+			jz		multiplication
 			jmp		programEnd
 
 addition:
@@ -73,11 +75,14 @@ underMin:
 			jmp		storage
 
 multiplication:
-			add.w	r6,		   r6
-			decd	r8
+			dec		r8
 			tst		r8
-			jnz		multiplication
-			jmp		storage
+			jz		storage
+			jn		clearance				; occurs if the multiplier starts at 0
+			add.w	r5,		   r6
+			cmp		#MAX_VAL,  r6
+			jhs		overMax
+			jmp		multiplication
 
 clearance:
 			clr.b	r6
