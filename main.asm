@@ -24,24 +24,25 @@ StopWDT     mov.w   #WDTPW|WDTHOLD,&WDTCTL  ; Stop watchdog timer
 ;-------------------------------------------------------------------------------
                                             ; Main loop here
 ;-------------------------------------------------------------------------------
+											; set up comments for the operations
 ADD_OP:     .equ    0x11
 SUB_OP:     .equ    0x22
 MUL_OP:     .equ    0x33
 CLR_OP:     .equ    0x44
 END_OP:     .equ    0x55
-; set up constants for highest and lowest allowable values
+											; set up constants for highest and lowest allowable values
 MAX_VAL:	.equ	0xff
 MIN_VAL:	.equ	0x00
 
-			mov.w	#program3, r9
+			mov.w	#program3, r9			; can use #program3 and it stores the value of the memory address
 			mov.w	#myResults,r10
-			mov.b	0(r9),	   r6
+			mov.b	0(r9),	   r6			; r6 is used similar to the accumulator
 			inc		r9
 
 fillData:
-			mov.b	0(r9),	   r7
+			mov.b	0(r9),	   r7			; r7 holds the operation
 			inc		r9
-			mov.b	0(r9),	   r8
+			mov.b	0(r9),	   r8			; r8 holds the operand
 			inc		r9
 			cmp		#ADD_OP,   r7
 			jz		addition
@@ -51,7 +52,6 @@ fillData:
 			jz		clearance
 			cmp		#MUL_OP,   r7
 			mov.b	r6,		   r5			; use r5 to keep track of original value
-			;clr.b	r6
 			jz		multiplication
 			jmp		programEnd
 
@@ -63,7 +63,7 @@ addition:
 
 subtraction:
 			sub.b	r8,		   r6
-			jn		underMin
+			jn		underMin				; n flag will be set if the result is negative
 			jmp		storage
 
 overMax:
@@ -78,7 +78,7 @@ multiplication:
 			dec		r8
 			tst		r8
 			jz		storage
-			jn		clearance				; occurs if the multiplier starts at 0
+			jn		clearance				 ; occurs if the multiplier starts at 0
 			add.w	r5,		   r6
 			cmp		#MAX_VAL,  r6
 			jhs		overMax
